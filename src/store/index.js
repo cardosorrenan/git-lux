@@ -3,37 +3,39 @@ import Vuex from 'vuex';
 import axios from 'axios';
 
 Vue.use(Vuex);
-
-const cliendId = process.env.VUE_APP_GITHUB_CLIENT_ID;
-const clientSecret = process.env.VUE_APP_GITHUB_CLIENT_SECRET;
 const baseUrl = 'https://api.github.com';
 
 export default new Vuex.Store({
   state: {
-    user: [],
+    user: {},
+    repos: [],
     notFound: false,
   },
   mutations: {
-    setUsers(state, payload) {
-      state.users = payload;
+    setUser(state, payload) {
+      state.user = payload;
     },
     setFindedUser(state, key) {
       state.notFound = key;
     },
+    setRepos(state, payload) {
+      state.repos = payload;
+    },
   },
   actions: {
-    async getUsers({ commit }, name) {
-      await axios.get(`${baseUrl}/users/${name}?client_id=${cliendId}&client_secret=${clientSecret}`)
+    async getUserWithRepos({ commit }, username) {
+      await axios.get(`${baseUrl}/users/${username}`)
         .then((response) => {
-          commit('setUsers', response.data);
+          commit('setUser', response.data);
           commit('setFindedUser', true);
         })
         .catch(() => {
-          commit('setUsers', []);
           commit('setFindedUser', false);
         });
+      await axios.get(`${baseUrl}/users/${username}/repos`)
+        .then((response) => {
+          commit('setRepos', response.data);
+        });
     },
-  },
-  modules: {
   },
 });

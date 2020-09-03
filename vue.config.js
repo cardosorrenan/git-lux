@@ -1,9 +1,16 @@
 module.exports = {
+  publicPath: '/',
+  css: {
+    sourceMap: true,
+    loaderOptions: {
+      sass: {
+        data: `@import "@/styles/main.scss";`
+      }
+    }
+  },
   chainWebpack: (config) => {
     const svgRule = config.module.rule('svg');
-
     svgRule.uses.clear();
-
     svgRule
       .use('vue-loader')
       .loader('vue-loader') // or `vue-loader-v16` if you are using a preview support of Vue 3 in Vue CLI
@@ -12,3 +19,6 @@ module.exports = {
       .loader('vue-svg-loader');
   },
 };
+
+
+ 

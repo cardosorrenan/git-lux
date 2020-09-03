@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Logo />
+    <Logo size="lg" />
     <InputUser />
   </div>
 </template>
@@ -23,7 +23,6 @@ export default {
 </script>
 
 <style scoped>
-  @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,700;1,300&display=swap");
   .container {
     display: flex;
     flex-direction: column;

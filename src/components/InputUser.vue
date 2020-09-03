@@ -1,12 +1,14 @@
 <template>
   <div>
     <div v-if='!loading' class='input-container'>
-      <input v-model='input' />
+      <form @submit="searchUser()">
+        <input v-model='input'/>
+      </form>
       <div @click='searchUser()' class='button-search'>
         <SearchIcon class='logo' />
       </div>
     </div>
-    <div class="" v-else>
+    <div class="loading-container" v-else>
       <LoadingIcon class="loading animate__animated"/>
     </div>
   </div>
@@ -31,25 +33,35 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['getUsers']),
+    ...mapActions(['getUserWithRepos']),
     async searchUser() {
-      this.loading = true;
       const search = this.input;
-      await this.getUsers(search).then(() => {
-        this.loading = false;
-        return this.$store.state.notFound
-          ? this.$router.push('/user')
-          : this.notFoundUser();
-      });
+      if (search.length > 0) {
+        this.loading = true;
+        await this.getUserWithRepos(search)
+          .then(() => {
+            this.loading = false;
+            return this.$route.name !== 'User'
+              ? this.$router.push('/user') : this.updateInfo();
+          })
+          .catch(() => {
+            this.loading = false;
+            this.notify('not found user :(');
+          });
+      } else {
+        this.notify('empty field :(');
+      }
     },
-    notFoundUser() {
+    updateInfo() {
+      this.$emit('update-info');
+    },
+    notify(title) {
       return this.$swal({
-        icon: 'question',
-        title: '<p style="font-size: 10pt; font-weight: 300">not found user :(</p>',
+        title: `<p style='font-size: 12pt; font-family: RobotoMono-Bold'>${title}</p>`,
         toast: true,
-        position: 'top-end',
+        position: 'top',
         showConfirmButton: false,
-        timer: 1500,
+        timer: 3000,
         showClass: {
           popup: 'animate__animated animate__fadeInDown',
         },
@@ -59,15 +71,25 @@ export default {
       });
     },
   },
+  watch: {
+    '$store.data.notFinded': {
+      handler(value) {
+        return !value ? this.notify('not found user :(') : 1;
+      },
+    },
+  },
 };
 </script>
 
 <style scoped>
   input {
     width: 420px;
-    height: 24px;
+    height: 30px;
     border: 2px solid #000;
     display: block;
+    padding-left: 10px;
+    font-family: "RobotoMono-ItalicLight";
+    border-radius: 0px;
   }
   .input-container {
     display: flex;
@@ -78,21 +100,16 @@ export default {
     align-items: center;
     justify-content: center;
     width: 50px;
-    height: 28px;
+    height: 34px;
     background-color: black;
+    border-radius: 0px;
   }
   .loading {
+    height: 30px;
     display: inline-block;
     animation: rotateIn;
-     /* referring directly to the animation's @keyframe declaration */
     animation-duration: 1s; /* don't forget to set a duration! */
     animation-iteration-count: infinite;
   }
-  /* svg {
-    fill: white !important;
-    color: white !important;
-    border-color: white !important;
-    stroke: white !important;
-    font-size: 5pt;
-  } */
+
 </style>

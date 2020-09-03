@@ -1,11 +1,22 @@
 <template>
   <div class="row">
-    <p class="github">GitHub</p>
-    <p class="search">Search</p>
+    <p :style="`font-size: ${this.fontSize}`" class="github">GitHub</p>
+    <p :style="`font-size: ${this.fontSize}`" class="search">Search</p>
   </div>
 </template>
-
-<style scoped>
+<script>
+export default {
+  props: {
+    size: String,
+  },
+  computed: {
+    fontSize() {
+      return this.size === 'sm' ? '30pt' : '40pt';
+    },
+  },
+};
+</script>
+<style scoped lang="scss">
   .row {
     display: flex;
     flex-direction: row;
@@ -13,15 +24,10 @@
     padding: 0px;
   }
   .github {
-    font-family: "Roboto Mono";
-    font-weight: 700;
-    font-size: 42px;
+    font-family: "RobotoMono-Bold";
     margin-right: 15px;
   }
   .search {
-    font-family: "Roboto Mono";
-    font-style: italic;
-    font-weight: 300;
-    font-size: 42px;
+    font-family: "RobotoMono-ItalicLight";
   }
 </style>
